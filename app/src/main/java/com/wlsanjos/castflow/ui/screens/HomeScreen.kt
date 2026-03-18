@@ -1,10 +1,11 @@
 package com.wlsanjos.castflow.ui.screens
 
 import androidx.compose.runtime.Composable
+import com.wlsanjos.castflow.model.MediaItem
 
 @Composable
 fun HomeScreen(
-    onNavigateToPreview: () -> Unit = {},
+    onNavigateToPreview: (MediaItem) -> Unit = {},
     onNavigateToDiscover: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {}
 ) {

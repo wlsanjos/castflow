@@ -49,7 +49,12 @@ android {
 
     packagingOptions {
         resources {
-            excludes += setOf("META-INF/AL2.0", "META-INF/LGPL2.1")
+            excludes += setOf(
+                "META-INF/AL2.0", 
+                "META-INF/LGPL2.1",
+                "META-INF/INDEX.LIST",
+                "META-INF/io.netty.versions.properties"
+            )
         }
     }
 }
@@ -90,6 +95,14 @@ dependencies {
 
     // Networking
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
+
+    // Local Media Server (Ktor)
+    implementation("io.ktor:ktor-server-core:2.3.3")
+    implementation("io.ktor:ktor-server-netty:2.3.3")
+    implementation("io.ktor:ktor-server-cio:2.3.3")
+    implementation("io.ktor:ktor-io:2.3.3")
+    implementation("io.ktor:ktor-http:2.3.3")
+    implementation("io.ktor:ktor-utils:2.3.3")
 
     // Testing
     testImplementation("junit:junit:4.13.2")

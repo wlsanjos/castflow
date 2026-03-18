@@ -14,7 +14,7 @@ fun NavGraph(startDestination: String = Route.Discover.route) {
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Route.Home.route) {
             HomeScreen(
-                onNavigateToPreview = { navController.navigate(Route.Preview.route) },
+                onNavigateToPreview = { _ -> navController.navigate(Route.Preview.route) },
                 onNavigateToDiscover = { navController.navigate(Route.Discover.route) },
                 onNavigateToSettings = { navController.navigate(Route.Settings.route) }
             )
@@ -23,13 +23,17 @@ fun NavGraph(startDestination: String = Route.Discover.route) {
         composable(Route.Discover.route) {
             DiscoverTvScreen(
                 onBack = { navController.popBackStack() },
-                onConnect = { navController.navigate(Route.Library.route) }
+                onConnect = { 
+                    navController.navigate(Route.Library.route) {
+                        popUpTo(Route.Discover.route) { inclusive = true }
+                    }
+                }
             )
         }
 
         composable(Route.Library.route) {
             LibraryScreen(
-                onNavigateToPreview = { navController.navigate(Route.Preview.route) },
+                onNavigateToPreview = { _ -> navController.navigate(Route.Preview.route) },
                 onNavigateToDiscover = { navController.navigate(Route.Discover.route) },
                 onNavigateToSettings = { navController.navigate(Route.Settings.route) }
             )
@@ -37,7 +41,7 @@ fun NavGraph(startDestination: String = Route.Discover.route) {
 
         composable(Route.Preview.route) {
             PreviewScreen(
-                onCast = { navController.navigate(Route.Playback.route) },
+                onCastSuccess = { navController.navigate(Route.Playback.route) },
                 onBack = { navController.popBackStack() },
                 onNavigateToLibrary = { navController.navigate(Route.Library.route) },
                 onNavigateToDiscover = { navController.navigate(Route.Discover.route) },

@@ -3,6 +3,7 @@
 Our code of conduct is based on the Contributor Covenant. By participating in this project you agree to abide by its terms.
 
 Summary:
+
 - Be respectful and considerate.
 - Refrain from harassment, discrimination or personal attacks.
 - Report any issues to the project maintainers.
