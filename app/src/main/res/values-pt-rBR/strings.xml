@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CastFlow</string>
+    <string name="discover">Descobrir</string>
+    <string name="discover_tv">Descobrir TV</string>
+    <string name="discover_tvs">Descobrir TVs</string>
+    <string name="start_scan">Iniciar busca</string>
+    <string name="library">Biblioteca</string>
+    <string name="preview">Pré-visualização</string>
+    <string name="media_preview_placeholder">Pré-visualização de mídia</string>
+    <string name="cast_to_tv">Transmitir para a TV</string>
+    <string name="playback">Reprodução</string>
+    <string name="play_pause">Reproduzir/Pausar</string>
+    <string name="cd_back">Voltar</string>
+
+    <!-- permission / state strings -->
+    <string name="permission_rationale_title">Acesse suas fotos e vídeos</string>
+    <string name="permission_rationale_desc">O CastFlow precisa acessar suas fotos e vídeos para que você escolha o que transmitir. Só iremos ler mídias do dispositivo.</string>
+    <string name="request_permission">Permitir acesso</string>
+    <string name="open_settings">Abrir configurações</string>
+    <string name="no_media_title">Nenhuma mídia encontrada</string>
+    <string name="no_media_desc">Nenhuma foto ou vídeo foi encontrada neste dispositivo.</string>
+    <string name="try_again">Tentar novamente</string>
+    <string name="loading">Carregando…</string>
+</resources>

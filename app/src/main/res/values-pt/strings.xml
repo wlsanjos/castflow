@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CastFlow</string>
+    <string name="castflow">CASTFLOW</string>
+
+    <!-- Navigation -->
+    <string name="nav_library">Biblioteca</string>
+    <string name="nav_cast">Transmitir</string>
+    <string name="nav_shared">Compartilhado</string>
+    <string name="nav_settings">Ajustes</string>
+    <string name="nav_devices">Dispositivos</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Library / Media Gallery -->
+    <string name="tabs_photos">Fotos</string>
+    <string name="tabs_videos">Vídeos</string>
+    <string name="tabs_albums">Álbuns</string>
+    <string name="section_today">Hoje</string>
+    <string name="section_yesterday">Ontem</string>
+    <string name="section_recent_media">Mídia Recente</string>
+    <string name="section_last_week">Semana Passada</string>
+    <string name="streaming_status">Transmitindo Agora</string>
+    <string name="streaming_to">Transmitindo: %s</string>
+
+    <!-- Discover / Connection -->
+    <string name="connect_device">Conectar Dispositivo</string>
+    <string name="scanning_devices">Buscando por seus dispositivos inteligentes</string>
+    <string name="scanning_label">BUSCANDO</string>
+    <string name="discovered_devices">Dispositivos Encontrados</string>
+    <string name="devices_found">%d encontrados</string>
+    <string name="connect_now">Conectar Agora</string>
+    <string name="wifi_network_hint">Certifique-se de que seu dispositivo está na mesma rede Wi-Fi.</string>
+    <string name="no_devices_found">Nenhum dispositivo encontrado. Certifique-se de que sua TV está ligada e na mesma rede Wi-Fi.</string>
+    <!-- Preview -->
+    <string name="now_playing">REPRODUZINDO AGORA</string>
+    <string name="cast_to_room">TRANSMITIR PARA %s</string>
+    <string name="devices_found_hint">%d dispositivos disponíveis na sua rede</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Configurações</string>
+    <string name="section_devices">DISPOSITIVOS</string>
+    <string name="section_preferences">PREFERÊNCIAS DO APP</string>
+    <string name="section_about">SOBRE</string>
+    <string name="status_connected">Conectado</string>
+    <string name="status_ready">Pronto para transmitir</string>
+    <string name="action_pair">Parear</string>
+    <string name="pref_auto_connect">Auto-conectar</string>
+    <string name="pref_auto_connect_desc">Conectar automaticamente ao último dispositivo</string>
+    <string name="pref_high_quality">Streaming de Alta Qualidade</string>
+    <string name="pref_high_quality_desc">Priorizar resolução em vez de latência</string>
+    <string name="pref_clear_cache">Limpar Cache do App</string>
+    <string name="pref_clear_cache_desc">124MB de espaço liberado</string>
+    <string name="terms_of_service">Termos de Serviço</string>
+    <string name="privacy_policy">Política de Privacidade</string>
+    <string name="sign_out">Sair</string>
+    <string name="version_info">Versão 2.4.0 (Estável)</string>
+
+    <!-- Legacy / Compatibility Strings -->
+    <string name="discover">Descobrir</string>
+    <string name="discover_tv">Descobrir TV</string>
+    <string name="discover_tvs">Descobrir TVs</string>
+    <string name="start_scan">Iniciar busca</string>
+    <string name="discover_scanning">Buscando dispositivos e TVs...</string>
+    <string name="discover_stop">Parar busca</string>
+    <string name="discover_connect">Conectar</string>
+    <string name="discover_connected">Conectado</string>
+    <string name="discover_connecting">Conectando...</string>
+    <string name="discover_connection_failed">Falha na conexão</string>
+    <string name="discover_not_connected">Não conectado</string>
+    <string name="library">Biblioteca</string>
+    <string name="preview">Prévia</string>
+    <string name="media_preview_placeholder">Prévia da mídia</string>
+    <string name="cast_to_tv">Transmitir para TV</string>
+    <string name="playback">Reprodução</string>
+    <string name="play_pause">Reproduzir/Pausar</string>
+    <string name="cd_back">Voltar</string>
+    <string name="permission_rationale_title">Acessar mídia para mostrar sua galeria</string>
+    <string name="permission_rationale_desc">O CastFlow precisa acessar suas fotos e vídeos para que você possa escolher o que transmitir. Lemos apenas as mídias do seu dispositivo.</string>
+    <string name="request_permission">Permitir acesso</string>
+    <string name="open_settings">Abrir configurações</string>
+    <string name="no_media_title">Nenhuma mídia encontrada</string>
+    <string name="no_media_desc">Nenhuma foto ou vídeo foi encontrado neste dispositivo.</string>
+    <string name="try_again">Tentar novamente</string>
+    <string name="loading">Carregando…</string>
+
+    <string name="connecting_tv">Conectando à TV…</string>
+    <string name="waiting_approval">Verifique sua TV e permita a conexão</string>
+    <string name="connected">TV Conectada!</string>
+    <string name="connection_error">Falha na conexão. Tente novamente.</string>
+</resources>

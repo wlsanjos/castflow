@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CastFlow</string>
+    <string name="castflow">CastFlow</string>
+
+    <!-- Navigation -->
+    <string name="nav_library">Biblioteca</string>
+    <string name="nav_cast">Transmitir</string>
+    <string name="nav_shared">Compártelo</string>
+    <string name="nav_settings">Ajustes</string>
+    <string name="nav_devices">Dispositivos</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Library / Media Gallery -->
+    <string name="tabs_photos">Fotos</string>
+    <string name="tabs_videos">Videos</string>
+    <string name="tabs_albums">Álbumes</string>
+    <string name="section_today">Hoy</string>
+    <string name="section_yesterday">Ayer</string>
+    <string name="section_recent_media">Medios recientes</string>
+    <string name="section_last_week">La semana pasada</string>
+    <string name="streaming_status">Transmitiendo ahora</string>
+
+    <!-- Discover / Connection -->
+    <string name="connect_device">Conectar Dispositivo</string>
+    <string name="scanning_devices">Escaneando dispositivos en tu red…</string>
+    <string name="scanning_label">ESCANEANDO</string>
+    <string name="discovered_devices">Dispositivos descubiertos</string>
+    <string name="devices_found">%d encontrados</string>
+    <string name="connect_now">Conectar ahora</string>
+    <string name="wifi_network_hint">Asegúrate de que tu TV esté en la misma red Wi-Fi</string>
+    <string name="no_devices_found">No se encontraron dispositivos. Asegúrate de que tu TV esté encendida y en la misma red Wi-Fi.</string>
+    <!-- Settings -->
+    <string name="settings_title">Ajustes</string>
+    <string name="section_devices">DISPOSITIVOS</string>
+    <string name="section_preferences">PREFERENCIAS</string>
+    <string name="section_about">ACERCA DE</string>
+    <string name="status_connected">Conectado</string>
+    <string name="status_ready">Listo para transmitir</string>
+    <string name="action_pair">Vincular</string>
+    <string name="pref_auto_connect">Conexión automática</string>
+    <string name="pref_auto_connect_desc">Vincular automáticamente al último dispositivo</string>
+    <string name="pref_high_quality">Streaming de alta calidad</string>
+    <string name="pref_high_quality_desc">Priorizar resolución sobre latencia</string>
+    <string name="pref_clear_cache">Limpiar caché</string>
+    <string name="pref_clear_cache_desc">Espacio liberado: 124MB</string>
+    <string name="terms_of_service">Términos de servicio</string>
+    <string name="privacy_policy">Política de privacidad</string>
+    <string name="sign_out">Cerrar sesión</string>
+    <string name="version_info">Versión 2.4.0 (Estable)</string>
+
+    <!-- Legacy / Compatibility Strings -->
+    <string name="discover">Descubrir</string>
+    <string name="library">Biblioteca</string>
+    <string name="media_preview_placeholder">Vista previa</string>
+    <string name="cast_to_tv">Transmitir a TV</string>
+    <string name="cd_back">Volver</string>
+    <string name="loading">Cargando…</string>
+
+    <string name="connecting_tv">Conectando a la TV…</string>
+    <string name="waiting_approval">Revisa tu TV y permite la conexión</string>
+    <string name="connected">¡TV Conectada!</string>
+    <string name="connection_error">Error de conexión. Inténtalo de nuevo.</string>
+</resources>
