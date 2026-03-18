@@ -150,14 +150,16 @@ class SsdpSamsungDiscoveryService(
                 val iface = interfaces.nextElement()
                 if (iface.isLoopback || !iface.isUp) continue
 
-                // Prioritize WiFi interfaces
-                if (!iface.name.contains("wlan", true) && !iface.name.contains("p2p", true)) continue
-
+                // Prioritize WiFi and Ethernet, but allow others if they have an IPv4
+                val isWifi = iface.name.contains("wlan", true) || iface.name.contains("p2p", true)
+                val isEth = iface.name.contains("eth", true)
+                
                 val addrs = iface.inetAddresses
                 while (addrs.hasMoreElements()) {
                     val addr = addrs.nextElement()
-                    if (addr is Inet4Address) {
-                        return addr
+                    if (addr is Inet4Address && !addr.isLoopbackAddress) {
+                        // If it's wifi or eth, return immediately. Otherwise keep looking.
+                        if (isWifi || isEth) return addr
                     }
                 }
             }
@@ -209,28 +211,25 @@ class SsdpSamsungDiscoveryService(
             val localIp = getLocalIpAddress()
             Log.i("SsdpSamsung", "Detected Local IP: $localIp")
             
-            socket = if (localIp != null) {
-                Log.i("SsdpSamsung", "Binding socket to $localIp")
-                DatagramSocket(InetSocketAddress(localIp, 0))
-            } else {
-                Log.w("SsdpSamsung", "No local IP found! Using default binding.")
-                DatagramSocket()
-            }
+            socket = DatagramSocket(0)
+            socket.soTimeout = 3000
+            socket.reuseAddress = true
             
-            socket.soTimeout = 2500 // Slightly shorter timeout per receive
             val ssdpAddr = InetAddress.getByName("239.255.255.250")
             val ssdpPort = 1900
 
-            Log.i("SsdpSamsung", "SSDP Search starting on local port ${socket.localPort}")
+            Log.i("SsdpSamsung", "SSDP Search starting on wildcard port ${socket.localPort}")
 
             val searchTargets = listOf(
                 "ssdp:all",
+                "upnp:rootdevice",
                 "urn:samsung.com:device:RemoteControlReceiver:1",
-                "urn:dial-multiscreen-org:service:dial:1"
+                "urn:dial-multiscreen-org:service:dial:1",
+                "urn:schemas-upnp-org:device:MediaRenderer:1"
             )
 
             // Multiple bursts for reliability
-            repeat(2) { burst ->
+            repeat(3) { burst ->
                 Log.d("SsdpSamsung", "Sending SSDP burst #$burst")
                 searchTargets.forEach { st ->
                     val query = (

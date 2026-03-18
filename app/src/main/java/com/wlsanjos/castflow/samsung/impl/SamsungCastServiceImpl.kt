@@ -20,9 +20,9 @@ import io.ktor.server.routing.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
+import com.wlsanjos.castflow.samsung.models.ConnectionState
+import com.wlsanjos.castflow.samsung.models.SamsungTvDevice
 import org.json.JSONObject
 import java.io.InputStream
 import javax.inject.Inject
@@ -53,6 +53,27 @@ class SamsungCastServiceImpl @Inject constructor(
             }
 
             startServerIfNeeded(8080)
+
+            // Ensure we are connected to the casting channel specifically
+            connectionService.connect(
+                com.wlsanjos.castflow.samsung.models.SamsungTvDevice(
+                    id = "",
+                    name = "",
+                    host = deviceHost
+                ),
+                "com.samsung.multiscreen.cast"
+            )
+
+            // Wait for connection to be ready (up to 15 seconds for user approval)
+            val isConnected = withTimeoutOrNull(15000) {
+                connectionService.connectionState().first { it is ConnectionState.Connected }
+            }
+
+            if (isConnected == null) {
+                Log.e("SamsungCast", "Timed out waiting for connection to casting channel")
+                _castState.value = CastState.Error("Connection timeout. Please approve on TV.")
+                return@launch
+            }
 
             val mediaUrl = "http://$localIp:8080/media?id=${media.id}"
             Log.d("SamsungCast", "Casting URL: $mediaUrl to $deviceHost")
@@ -117,7 +138,7 @@ class SamsungCastServiceImpl @Inject constructor(
             val json = JSONObject().apply {
                 put("method", "ms.channel.emit")
                 put("params", JSONObject().apply {
-                    put("event", "com.wlsanjos.media.open")
+                    put("event", "ms.media.open")
                     put("to", "host")
                     put("data", JSONObject().apply {
                         put("contentId", media.id)
