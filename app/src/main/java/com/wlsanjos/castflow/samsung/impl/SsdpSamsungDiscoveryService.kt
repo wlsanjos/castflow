@@ -298,12 +298,15 @@ class SsdpSamsungDiscoveryService(
     }
 
     private suspend fun inspectSsdpCandidate(host: String, rawResponse: String, isDefinite: Boolean) {
+        val usnLine = rawResponse.split("\r\n").firstOrNull { it.startsWith("USN:", true) }
+        val usn = usnLine?.substringAfter(':')?.trim() ?: UUID.randomUUID().toString()
+        val deviceId = usn.substringBefore("::").replace("uuid:", "")
+
         val locationLine = rawResponse.split("\r\n").firstOrNull { it.startsWith("LOCATION:", true) }
         val locationUrl = locationLine?.substringAfter(':')?.trim()
-
         if (isDefinite) {
             val device = SamsungTvDevice(
-                id = UUID.randomUUID().toString(),
+                id = deviceId,
                 name = "Samsung TV ($host)",
                 host = host,
                 port = 8001,

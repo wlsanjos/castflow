@@ -1,6 +1,7 @@
 package com.wlsanjos.castflow.samsung.api
 
 import com.wlsanjos.castflow.model.MediaItem
+import com.wlsanjos.castflow.samsung.models.SamsungTvDevice
 import kotlinx.coroutines.flow.Flow
 
 sealed class CastState {
@@ -12,6 +13,6 @@ sealed class CastState {
 
 interface SamsungCastService {
     fun castState(): Flow<CastState>
-    fun castMedia(media: MediaItem, deviceHost: String)
+    fun castMedia(media: MediaItem, device: SamsungTvDevice)
     fun stopCasting()
 }

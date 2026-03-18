@@ -70,7 +70,14 @@ class SamsungConnectionServiceImpl(
 
     private suspend fun tryConnect(device: SamsungTvDevice, port: Int, protocol: String, channelId: String): Boolean {
         val deviceNameBase64 = Base64.encodeToString("CastFlow".toByteArray(), Base64.NO_WRAP)
-        val url = "$protocol://${device.host}:$port/api/v2/channels/$channelId?name=$deviceNameBase64"
+        var url = "$protocol://${device.host}:$port/api/v2/channels/$channelId?name=$deviceNameBase64"
+        
+        if (device.id.isNotEmpty()) {
+            url += "&id=${device.id}"
+        }
+        if (!device.token.isNullOrEmpty()) {
+            url += "&token=${device.token}"
+        }
 
         val deferred = CompletableDeferred<Boolean>()
         val currentClient = if (port == 8002) client8002 else client8001

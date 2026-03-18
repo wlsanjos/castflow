@@ -41,7 +41,7 @@ class SamsungCastServiceImpl @Inject constructor(
 
     override fun castState() = _castState.asStateFlow()
 
-    override fun castMedia(media: MediaItem, deviceHost: String) {
+    override fun castMedia(media: MediaItem, device: SamsungTvDevice) {
         scope.launch {
             _castState.value = CastState.Casting
             currentMedia = media
@@ -55,14 +55,7 @@ class SamsungCastServiceImpl @Inject constructor(
             startServerIfNeeded(8080)
 
             // Ensure we are connected to the casting channel specifically
-            connectionService.connect(
-                com.wlsanjos.castflow.samsung.models.SamsungTvDevice(
-                    id = "",
-                    name = "",
-                    host = deviceHost
-                ),
-                "com.samsung.multiscreen.cast"
-            )
+            connectionService.connect(device, "com.samsung.multiscreen.cast")
 
             // Wait for connection to be ready (up to 15 seconds for user approval)
             val isConnected = withTimeoutOrNull(15000) {
@@ -76,7 +69,7 @@ class SamsungCastServiceImpl @Inject constructor(
             }
 
             val mediaUrl = "http://$localIp:8080/media?id=${media.id}"
-            Log.d("SamsungCast", "Casting URL: $mediaUrl to $deviceHost")
+            Log.d("SamsungCast", "Casting URL: $mediaUrl to")
 
             val success = sendMediaOpenCommand(media, mediaUrl)
 

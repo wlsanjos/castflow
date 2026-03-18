@@ -62,6 +62,6 @@ class PreviewViewModel @Inject constructor(
     fun castMedia() {
         val media = _uiState.value.media ?: return
         val device = deviceStore.device.value ?: return
-        castService.castMedia(media, device.host)
+        castService.castMedia(media, device)
     }
 }
