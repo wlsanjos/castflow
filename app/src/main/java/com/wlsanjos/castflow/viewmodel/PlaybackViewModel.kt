@@ -5,17 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.wlsanjos.castflow.model.MediaItem
 import com.wlsanjos.castflow.model.MediaSelectionStore
 import com.wlsanjos.castflow.samsung.state.ConnectedDeviceStore
+import com.wlsanjos.castflow.samsung.api.SamsungCastService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class PlaybackUiState(
     val isPlaying: Boolean = false,
     val positionMs: Long = 0L,
+    val durationMs: Long = 0L,
     val media: MediaItem? = null,
     val deviceName: String? = null
 )
@@ -23,7 +22,8 @@ data class PlaybackUiState(
 @HiltViewModel
 class PlaybackViewModel @Inject constructor(
     private val selectionStore: MediaSelectionStore,
-    private val deviceStore: ConnectedDeviceStore
+    private val deviceStore: ConnectedDeviceStore,
+    private val castService: SamsungCastService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PlaybackUiState())
@@ -32,7 +32,10 @@ class PlaybackViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             selectionStore.selectedMedia.collect { media ->
-                _uiState.update { it.copy(media = media) }
+                _uiState.update { it.copy(
+                    media = media,
+                    durationMs = media?.duration ?: 0L
+                ) }
             }
         }
         viewModelScope.launch {
@@ -42,10 +45,17 @@ class PlaybackViewModel @Inject constructor(
         }
     }
 
-    fun play() { _uiState.update { it.copy(isPlaying = true) } }
-    fun pause() { _uiState.update { it.copy(isPlaying = false) } }
+    fun play() { 
+        _uiState.update { it.copy(isPlaying = true) }
+        // TODO: implement real play command to TV
+    }
+    
+    fun pause() { 
+        _uiState.update { it.copy(isPlaying = false) }
+        // TODO: implement real pause command to TV
+    }
     
     fun stopCasting() {
-        // TODO: call castService.stopCasting()
+        castService.stopCasting()
     }
 }

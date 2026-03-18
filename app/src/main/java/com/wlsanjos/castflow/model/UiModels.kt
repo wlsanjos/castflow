@@ -18,6 +18,7 @@ data class MediaItem(
     val title: String,
     val uri: Uri,
     val type: MediaType,
+    val mimeType: String? = null,
     val duration: Long? = null, // In milliseconds, for videos
     val size: Long = 0,
     val dateModified: Long = 0,

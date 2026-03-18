@@ -16,8 +16,11 @@ interface SamsungConnectionService {
 
     /**
      * Start the connection/pairing process with the specified device.
+     * @param channelId The WebSocket channel to connect to. 
+     * Defaults to "samsung.remote.control" for remote keys.
+     * Use "com.samsung.multiscreen.cast" for media transmission.
      */
-    fun connect(device: SamsungTvDevice)
+    fun connect(device: SamsungTvDevice, channelId: String = "samsung.remote.control")
 
     /**
      * Terminate the connection and cleanup resources.

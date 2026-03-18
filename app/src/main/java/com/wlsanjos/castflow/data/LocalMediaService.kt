@@ -24,6 +24,7 @@ class LocalMediaService @Inject constructor(
             MediaStore.Images.Media._ID,
             MediaStore.Images.Media.DISPLAY_NAME,
             MediaStore.Images.Media.SIZE,
+            MediaStore.Images.Media.MIME_TYPE,
             MediaStore.Images.Media.DATE_MODIFIED,
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME
         )
@@ -40,6 +41,7 @@ class LocalMediaService @Inject constructor(
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
             val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
             val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)
+            val mimeColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.MIME_TYPE)
             val dateColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED)
             val bucketColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
 
@@ -47,6 +49,7 @@ class LocalMediaService @Inject constructor(
                 val id = cursor.getLong(idColumn)
                 val name = cursor.getString(nameColumn)
                 val size = cursor.getLong(sizeColumn)
+                val mimeType = cursor.getString(mimeColumn)
                 val date = cursor.getLong(dateColumn)
                 val bucket = cursor.getString(bucketColumn)
                 val contentUri = ContentUris.withAppendedId(
@@ -61,6 +64,7 @@ class LocalMediaService @Inject constructor(
                         uri = contentUri,
                         type = MediaType.PHOTO,
                         size = size,
+                        mimeType = mimeType,
                         dateModified = date,
                         albumName = bucket
                     )
@@ -76,6 +80,7 @@ class LocalMediaService @Inject constructor(
             MediaStore.Video.Media._ID,
             MediaStore.Video.Media.DISPLAY_NAME,
             MediaStore.Video.Media.SIZE,
+            MediaStore.Video.Media.MIME_TYPE,
             MediaStore.Video.Media.DURATION,
             MediaStore.Video.Media.DATE_MODIFIED,
             MediaStore.Video.Media.BUCKET_DISPLAY_NAME
@@ -93,6 +98,7 @@ class LocalMediaService @Inject constructor(
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
             val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
             val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
+            val mimeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE)
             val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
             val dateColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED)
             val bucketColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
@@ -101,6 +107,7 @@ class LocalMediaService @Inject constructor(
                 val id = cursor.getLong(idColumn)
                 val name = cursor.getString(nameColumn)
                 val size = cursor.getLong(sizeColumn)
+                val mimeType = cursor.getString(mimeColumn)
                 val duration = cursor.getLong(durationColumn)
                 val date = cursor.getLong(dateColumn)
                 val bucket = cursor.getString(bucketColumn)
@@ -115,6 +122,7 @@ class LocalMediaService @Inject constructor(
                         title = name,
                         uri = contentUri,
                         type = MediaType.VIDEO,
+                        mimeType = mimeType,
                         duration = duration,
                         size = size,
                         dateModified = date,

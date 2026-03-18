@@ -92,6 +92,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     // Image loading
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-video:2.4.0")
 
     // Networking
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
@@ -99,6 +100,7 @@ dependencies {
     // Local Media Server (Ktor)
     implementation("io.ktor:ktor-server-core:2.3.3")
     implementation("io.ktor:ktor-server-netty:2.3.3")
+    implementation("io.ktor:ktor-server-partial-content:2.3.3")
     implementation("io.ktor:ktor-server-cio:2.3.3")
     implementation("io.ktor:ktor-io:2.3.3")
     implementation("io.ktor:ktor-http:2.3.3")

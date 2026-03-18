@@ -4,6 +4,7 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import coil.Coil
 import coil.ImageLoader
+import coil.decode.VideoFrameDecoder
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 
@@ -16,6 +17,9 @@ class CastFlowApplication : Application() {
         // to improve thumbnail performance and reduce OOM risk.
         val imageLoader = ImageLoader.Builder(this)
             .crossfade(true)
+            .components {
+                add(VideoFrameDecoder.Factory())
+            }
             .memoryCache {
                 MemoryCache.Builder(this)
                     // Use a modest fraction of app memory for image cache.
@@ -35,4 +39,3 @@ class CastFlowApplication : Application() {
         Coil.setImageLoader(imageLoader)
     }
 }
-

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.wlsanjos.castflow.R
+import com.wlsanjos.castflow.model.MediaType
 import com.wlsanjos.castflow.ui.components.*
 import com.wlsanjos.castflow.viewmodel.PlaybackViewModel
 
@@ -97,6 +98,14 @@ fun PlaybackControlScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
+            if (uiState.media?.type == MediaType.VIDEO) {
+                PlaybackProgress(
+                    currentMs = uiState.positionMs,
+                    totalMs = uiState.durationMs
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
             // Controls
             PlaybackControls(
                 isPlaying = uiState.isPlaying,
@@ -118,6 +127,38 @@ fun PlaybackControlScreen(
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
+}
+
+@Composable
+fun PlaybackProgress(currentMs: Long, totalMs: Long) {
+    val progress = if (totalMs > 0) currentMs.toFloat() / totalMs.toFloat() else 0f
+    
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Slider(
+            value = progress,
+            onValueChange = {},
+            modifier = Modifier.fillMaxWidth(),
+            colors = SliderDefaults.colors(
+                thumbColor = Color(0xFF00F0FF),
+                activeTrackColor = Color(0xFF00F0FF),
+                inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+            )
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(formatTime(currentMs), color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+            Text(formatTime(totalMs), color = Color.Gray, style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+fun formatTime(ms: Long): String {
+    val totalSeconds = ms / 1000
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return "%d:%02d".format(java.util.Locale.getDefault(), minutes, seconds)
 }
 
 @Composable

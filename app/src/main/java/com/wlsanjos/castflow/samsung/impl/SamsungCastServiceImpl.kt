@@ -10,12 +10,15 @@ import com.wlsanjos.castflow.samsung.api.SamsungConnectionService
 import com.wlsanjos.castflow.utils.NetworkUtils
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.http.*
+import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.partialcontent.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.utils.io.jvm.javaio.copyTo
+import io.ktor.utils.io.*
+import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,7 +58,7 @@ class SamsungCastServiceImpl @Inject constructor(
             Log.d("SamsungCast", "Casting URL: $mediaUrl to $deviceHost")
 
             val success = sendMediaOpenCommand(media, mediaUrl)
-            
+
             if (success) {
                 _castState.value = CastState.Success(media)
             } else {
@@ -68,9 +71,15 @@ class SamsungCastServiceImpl @Inject constructor(
         if (server != null) return
 
         server = embeddedServer(Netty, port = port) {
+            install(PartialContent)
             routing {
+                get("/ping") {
+                    Log.i("SamsungCast", "Received /ping request")
+                    call.respondText("pong")
+                }
                 get("/media") {
                     val id = call.parameters["id"]
+                    Log.i("SamsungCast", "HTTP request for /media, id=$id, query=${call.request.queryParameters}")
                     if (id == null || currentMedia?.id != id) {
                         call.respond(HttpStatusCode.NotFound)
                         return@get
@@ -78,22 +87,24 @@ class SamsungCastServiceImpl @Inject constructor(
 
                     val media = currentMedia ?: return@get
                     val contentResolver = this@SamsungCastServiceImpl.context.contentResolver
-                    
+
                     try {
                         val inputStream = contentResolver.openInputStream(media.uri)
                         if (inputStream != null) {
-                            val mimeType = if (media.type == MediaType.PHOTO) "image/jpeg" else "video/mp4"
-                            call.respondBytesWriter(contentType = ContentType.parse(mimeType)) {
-                                inputStream.use { input ->
-                                    input.copyTo(this)
-                                }
-                            }
+                            val mimeType = media.mimeType ?: if (media.type == MediaType.PHOTO) "image/jpeg" else "video/mp4"
+                            val size = media.size
+
+                            call.respond(object : OutgoingContent.ReadChannelContent() {
+                                override val contentType: ContentType = ContentType.parse(mimeType)
+                                override val contentLength: Long? = if (size > 0) size else null
+                                override fun readFrom(): ByteReadChannel = inputStream.toByteReadChannel()
+                            })
                         } else {
                             call.respond(HttpStatusCode.NotFound)
                         }
                     } catch (e: Exception) {
                         Log.e("SamsungCast", "Error serving media", e)
-                        call.respond(HttpStatusCode.InternalServerError)
+                        // If we haven't responded yet, we could try, but usually it's a closed channel.
                     }
                 }
             }
@@ -106,13 +117,13 @@ class SamsungCastServiceImpl @Inject constructor(
             val json = JSONObject().apply {
                 put("method", "ms.channel.emit")
                 put("params", JSONObject().apply {
-                    put("event", "ms.media.open")
+                    put("event", "com.wlsanjos.media.open")
                     put("to", "host")
                     put("data", JSONObject().apply {
                         put("contentId", media.id)
                         put("title", media.title)
                         put("mediaUrl", url)
-                        put("mimeType", if (media.type == MediaType.PHOTO) "image/jpeg" else "video/mp4")
+                        put("mimeType", media.mimeType ?: if (media.type == MediaType.PHOTO) "image/jpeg" else "video/mp4")
                     })
                 })
             }

@@ -20,7 +20,7 @@ class SamsungConnectionServiceImpl(
 
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
     private var webSocket: WebSocket? = null
-    
+
     // Client for Port 8001 (Unsecure)
     private val client8001 = OkHttpClient.Builder()
         .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -48,33 +48,35 @@ class SamsungConnectionServiceImpl(
 
     override fun connectionState(): Flow<ConnectionState> = _connectionState
 
-    override fun connect(device: SamsungTvDevice) {
+    override fun connect(device: SamsungTvDevice, channelId: String) {
         scope.launch {
-            if (_connectionState.value is ConnectionState.Connecting || 
+            if (_connectionState.value is ConnectionState.Connecting ||
                 _connectionState.value is ConnectionState.Connected) {
-                return@launch
+                // If already connected but to a DIFFERENT channel, disconnect first
+                // For now, let's just reconnect to the new one if the channel is different.
+                _connectionState.emit(ConnectionState.Connecting)
             }
 
             _connectionState.emit(ConnectionState.Connecting)
 
             // Try 8002 (WSS) first for newer models
-            val success = tryConnect(device, 8002, "wss")
+            val success = tryConnect(device, 8002, "wss", channelId)
             if (!success) {
                 Log.d("SamsungConnection", "Port 8002 failed, falling back to 8001")
-                tryConnect(device, 8001, "ws")
+                tryConnect(device, 8001, "ws", channelId)
             }
         }
     }
 
-    private suspend fun tryConnect(device: SamsungTvDevice, port: Int, protocol: String): Boolean {
+    private suspend fun tryConnect(device: SamsungTvDevice, port: Int, protocol: String, channelId: String): Boolean {
         val deviceNameBase64 = Base64.encodeToString("CastFlow".toByteArray(), Base64.NO_WRAP)
-        val url = "$protocol://${device.host}:$port/api/v2/channels/samsung.remote.control?name=$deviceNameBase64"
-        
+        val url = "$protocol://${device.host}:$port/api/v2/channels/$channelId?name=$deviceNameBase64"
+
         val deferred = CompletableDeferred<Boolean>()
         val currentClient = if (port == 8002) client8002 else client8001
-        
+
         val request = Request.Builder().url(url).build()
-        
+
         val listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 this@SamsungConnectionServiceImpl.webSocket = webSocket
@@ -86,7 +88,7 @@ class SamsungConnectionServiceImpl(
                     val json = JSONObject(text)
                     val event = json.optString("event")
                     Log.d("SamsungConnection", "Message: $text")
-                    
+
                     when (event) {
                         "ms.channel.connect" -> {
                             val data = json.optJSONObject("data")
@@ -137,7 +139,7 @@ class SamsungConnectionServiceImpl(
         }
 
         currentClient.newWebSocket(request, listener)
-        
+
         return withTimeoutOrNull(6000) { deferred.await() } ?: false
     }
 
@@ -148,6 +150,8 @@ class SamsungConnectionServiceImpl(
     }
 
     override fun sendMessage(text: String): Boolean {
-        return webSocket?.send(text) ?: false
+        val sent = webSocket?.send(text) ?: false
+        Log.d("SamsungConnection", "sendMessage result: $sent, payload: $text")
+        return sent
     }
 }
