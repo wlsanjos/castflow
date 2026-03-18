@@ -1,9 +1,10 @@
 package com.wlsanjos.castflow.samsung.di
 
-import android.app.Application
 import android.content.Context
+import com.wlsanjos.castflow.samsung.api.SamsungCastService
 import com.wlsanjos.castflow.samsung.api.SamsungConnectionService
 import com.wlsanjos.castflow.samsung.api.SamsungDiscoveryService
+import com.wlsanjos.castflow.samsung.impl.SamsungCastServiceImpl
 import com.wlsanjos.castflow.samsung.impl.SamsungConnectionServiceImpl
 import com.wlsanjos.castflow.samsung.impl.SsdpSamsungDiscoveryService
 import com.wlsanjos.castflow.samsung.state.ConnectedDeviceStore
@@ -31,4 +32,11 @@ object SamsungModule {
     @Provides
     @Singleton
     fun provideConnectedDeviceStore(): ConnectedDeviceStore = ConnectedDeviceStore()
+
+    @Provides
+    @Singleton
+    fun provideSamsungCastService(
+        @ApplicationContext context: Context,
+        connectionService: SamsungConnectionService
+    ): SamsungCastService = SamsungCastServiceImpl(context, connectionService)
 }

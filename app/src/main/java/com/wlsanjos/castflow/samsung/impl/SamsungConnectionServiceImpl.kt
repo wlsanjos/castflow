@@ -89,16 +89,28 @@ class SamsungConnectionServiceImpl(
                     
                     when (event) {
                         "ms.channel.connect" -> {
-                            scope.launch { _connectionState.emit(ConnectionState.WaitingForApproval) }
+                            val data = json.optJSONObject("data")
+                            val token = data?.optString("token")
+                            if (!token.isNullOrEmpty()) {
+                                Log.i("SamsungConnection", "Already authorized with token: $token")
+                                scope.launch {
+                                    _connectionState.emit(ConnectionState.Connected(device.copy(token = token)))
+                                }
+                            } else {
+                                Log.i("SamsungConnection", "Waiting for user approval on TV")
+                                scope.launch { _connectionState.emit(ConnectionState.WaitingForApproval) }
+                            }
                         }
                         "ms.channel.ready" -> {
                             val data = json.optJSONObject("data")
                             val token = data?.optString("token")
+                            Log.i("SamsungConnection", "Channel ready. Token: $token")
                             scope.launch {
                                 _connectionState.emit(ConnectionState.Connected(device.copy(token = token)))
                             }
                         }
                         "ms.channel.unauthorized" -> {
+                            Log.w("SamsungConnection", "Connection unauthorized by user")
                             scope.launch { _connectionState.emit(ConnectionState.Failed("Denied by user")) }
                             webSocket.close(1000, "Unauthorized")
                         }
@@ -133,5 +145,9 @@ class SamsungConnectionServiceImpl(
         webSocket?.close(1000, "User requested")
         webSocket = null
         scope.launch { _connectionState.emit(ConnectionState.Disconnected) }
+    }
+
+    override fun sendMessage(text: String): Boolean {
+        return webSocket?.send(text) ?: false
     }
 }

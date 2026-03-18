@@ -52,8 +52,10 @@ fun DiscoverTvScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.navigateToLibrary.collect {
-            onConnect()
+        viewModel.uiEvent.collect { event: DiscoverViewModel.UiEvent ->
+            when (event) {
+                is DiscoverViewModel.UiEvent.NavigateToLibrary -> onConnect()
+            }
         }
     }
 

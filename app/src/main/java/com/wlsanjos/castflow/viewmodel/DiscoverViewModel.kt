@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,7 +34,12 @@ class DiscoverViewModel @Inject constructor(
     private val _connectionState = MutableStateFlow<ConnectionState>(ConnectionState.Disconnected)
     val connectionState: StateFlow<ConnectionState> = _connectionState
 
-    val navigateToLibrary = MutableSharedFlow<Unit>()
+    sealed class UiEvent {
+        object NavigateToLibrary : UiEvent()
+    }
+
+    private val _uiEvent = kotlinx.coroutines.channels.Channel<UiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -56,7 +62,7 @@ class DiscoverViewModel @Inject constructor(
                     is ConnectionState.Connected -> {
                         _uiState.update { it.copy(connectionMessage = null) }
                         connectedDeviceStore.set(cs.device)
-                        navigateToLibrary.emit(Unit)
+                        _uiEvent.send(UiEvent.NavigateToLibrary)
                     }
                     is ConnectionState.Failed -> _uiState.update { it.copy(connectionMessage = null) }
                     ConnectionState.Disconnected -> _uiState.update { it.copy(connectionMessage = null) }

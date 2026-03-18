@@ -61,4 +61,12 @@
     <string name="waiting_approval">Revisa tu TV y permite la conexión</string>
     <string name="connected">¡TV Conectada!</string>
     <string name="connection_error">Error de conexión. Inténtalo de nuevo.</string>
+    <string name="no_albums_found">No se encontraron álbumes</string>
+    <string name="casting_started">Transmisión iniciada</string>
+    <string name="casting_failed">Error al transmitir</string>
+    <string name="connected_to">Conectado a %s</string>
+    <string name="not_connected_to_tv">Ninguna TV conectada</string>
+    <string name="no_media_title">No se encontraron medios</string>
+    <string name="no_media_desc">Não se encontraron fotos o videos en este dispositivo.</string>
+    <string name="stop_casting">Detener Transmisión</string>
 </resources>

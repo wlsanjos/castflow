@@ -20,19 +20,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.wlsanjos.castflow.R
+import com.wlsanjos.castflow.model.MediaType
+import com.wlsanjos.castflow.samsung.api.CastState
 import com.wlsanjos.castflow.ui.components.CastFlowBottomBar
 import com.wlsanjos.castflow.ui.components.PrimaryButton
+import com.wlsanjos.castflow.viewmodel.PreviewViewModel
 
 @Composable
 fun PreviewScreen(
-    onCast: () -> Unit,
+    onCastSuccess: () -> Unit,
     onBack: () -> Unit,
     onNavigateToLibrary: () -> Unit,
     onNavigateToDiscover: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    viewModel: PreviewViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvents.collect { event ->
+            when (event) {
+                is PreviewViewModel.UiEvent.NavigateToPlayback -> onCastSuccess()
+            }
+        }
+    }
+
     Scaffold(
         containerColor = Color(0xFF091013),
         bottomBar = {
@@ -58,147 +73,177 @@ fun PreviewScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        stringResource(R.string.castflow),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = Color(0xFF00F0FF),
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 2.sp
-                        )
-                    )
-                    Text(
-                        stringResource(R.string.now_playing),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.White.copy(alpha = 0.7f),
-                        letterSpacing = 2.sp
-                    )
-                }
-                IconButton(onClick = { /* TODO */ }) {
-                    Icon(Icons.Default.Share, contentDescription = null, tint = Color.White)
-                }
-            }
+            PreviewHeader(onBack = onBack)
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Media Artwork with Glow
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(0.85f)
-                    .drawBehind {
-                        drawCircle(
-                            brush = Brush.radialGradient(
-                                colors = listOf(
-                                    Color(0xFF00F0FF).copy(alpha = 0.15f),
-                                    Color.Transparent
-                                )
-                            ),
-                            radius = size.width * 0.8f
-                        )
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(0.9f)
-                        .clip(RoundedCornerShape(32.dp))
-                ) {
-                    AsyncImage(
-                        model = "https://picsum.photos/id/102/800/1000",
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                    
-                    // 4K HDR Badge
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = Color.Black.copy(alpha = 0.5f),
-                        modifier = Modifier.padding(16.dp).align(Alignment.TopEnd)
-                    ) {
-                        Text(
-                            "4K HDR",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    // Centered Play Button
-                    Surface(
-                        shape = CircleShape,
-                        color = Color.White.copy(alpha = 0.2f),
-                        modifier = Modifier.size(72.dp).align(Alignment.Center).border(1.dp, Color.White.copy(alpha = 0.3f), CircleShape)
-                    ) {
-                        Icon(
-                            Icons.Default.PlayArrow,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.padding(20.dp).size(32.dp)
-                        )
-                    }
-                }
-            }
+            // Media Preview
+            MediaArtwork(
+                uri = uiState.media?.uri,
+                type = uiState.media?.type ?: MediaType.PHOTO
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // Metadata
-            Text(
-                "Ethereal Horizons",
-                style = MaterialTheme.typography.headlineLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            )
-            Text(
-                "Cinematic Collection • 02:45",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.Gray
+            MediaMetadata(
+                title = uiState.media?.title ?: "Unknown",
+                detail = if (uiState.media?.type == MediaType.VIDEO) "Video" else "Photo"
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Progress
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Slider(
-                    value = 0.45f,
-                    onValueChange = {},
-                    colors = SliderDefaults.colors(
-                        thumbColor = Color(0xFF00F0FF),
-                        activeTrackColor = Color(0xFF00F0FF),
-                        inactiveTrackColor = Color.White.copy(alpha = 0.1f)
-                    )
-                )
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("01:14", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-                    Text("02:45", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
-                }
-            }
+            // Connection Status
+            ConnectionStatusInfo(deviceName = uiState.connectedDeviceName)
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            PrimaryButton(
-                text = stringResource(R.string.cast_to_room, "LIVING ROOM TV"),
-                onClick = onCast
+            // Cast Button
+            CastButton(
+                castState = uiState.castState,
+                deviceName = uiState.connectedDeviceName,
+                onClick = { viewModel.castMedia() }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Router, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.devices_found_hint, 3), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            if (uiState.castState is CastState.Error) {
+                Text(
+                    text = (uiState.castState as CastState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
         }
     }
+}
+
+@Composable
+fun PreviewHeader(onBack: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onBack) {
+            Icon(Icons.Default.ArrowBack, contentDescription = null, tint = Color.White)
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                stringResource(R.string.castflow),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = Color(0xFF00F0FF),
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp
+                )
+            )
+            Text(
+                stringResource(R.string.preview).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.White.copy(alpha = 0.7f),
+                letterSpacing = 2.sp
+            )
+        }
+        IconButton(onClick = { /* Share */ }) {
+            Icon(Icons.Default.Share, contentDescription = null, tint = Color.White)
+        }
+    }
+}
+
+@Composable
+fun MediaArtwork(uri: android.net.Uri?, type: MediaType) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .drawBehind {
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            Color(0xFF00F0FF).copy(alpha = 0.1f),
+                            Color.Transparent
+                        )
+                    ),
+                    radius = size.width * 0.7f
+                )
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(0.85f)
+                .clip(RoundedCornerShape(32.dp))
+                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(32.dp))
+        ) {
+            if (uri != null) {
+                AsyncImage(
+                    model = uri,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.05f)))
+            }
+            
+            if (type == MediaType.VIDEO) {
+                Icon(
+                    Icons.Default.PlayCircle,
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = 0.7f),
+                    modifier = Modifier.size(64.dp).align(Alignment.Center)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MediaMetadata(title: String, detail: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            title,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            ),
+            maxLines = 1
+        )
+        Text(
+            detail,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Gray
+        )
+    }
+}
+
+@Composable
+fun ConnectionStatusInfo(deviceName: String?) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            if (deviceName != null) Icons.Default.Tv else Icons.Default.TvOff,
+            contentDescription = null,
+            tint = if (deviceName != null) Color(0xFF00F0FF) else Color.Gray,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            if (deviceName != null) stringResource(R.string.connected_to, deviceName)
+            else stringResource(R.string.not_connected_to_tv),
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (deviceName != null) Color.White else Color.Gray
+        )
+    }
+}
+
+@Composable
+fun CastButton(castState: CastState, deviceName: String?, onClick: () -> Unit) {
+    val isLoading = castState is CastState.Casting
+    
+    PrimaryButton(
+        text = if (isLoading) stringResource(R.string.loading) 
+               else stringResource(R.string.cast_to_tv),
+        onClick = onClick,
+        enabled = deviceName != null && !isLoading,
+        modifier = Modifier.fillMaxWidth()
+    )
 }

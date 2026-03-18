@@ -87,4 +87,10 @@
     <string name="waiting_approval">Check your TV and allow the connection</string>
     <string name="connected">TV Connected!</string>
     <string name="connection_error">Connection failed. Please try again.</string>
+    <string name="no_albums_found">No albums found</string>
+    <string name="casting_started">Casting started</string>
+    <string name="casting_failed">Failed to cast</string>
+    <string name="connected_to">Connected to %s</string>
+    <string name="not_connected_to_tv">No TV connected</string>
+    <string name="stop_casting">Stop Casting</string>
 </resources>

@@ -23,4 +23,9 @@ interface SamsungConnectionService {
      * Terminate the connection and cleanup resources.
      */
     fun disconnect()
+
+    /**
+     * Send a raw WebSocket message to the TV.
+     */
+    fun sendMessage(text: String): Boolean
 }

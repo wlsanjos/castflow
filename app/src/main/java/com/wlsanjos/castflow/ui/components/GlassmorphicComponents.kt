@@ -59,6 +59,7 @@ fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.primary
 ) {
     Button(
@@ -66,6 +67,7 @@ fun PrimaryButton(
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = Color.Black
